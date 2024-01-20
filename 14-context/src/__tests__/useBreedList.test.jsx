@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useBreedList from "../useBreedList";
-import { render, renderHook } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import { expect, test } from "vitest";
 
 const queryClient = new QueryClient({
