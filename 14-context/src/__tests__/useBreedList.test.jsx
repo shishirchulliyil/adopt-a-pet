@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useBreedList from "../useBreedList";
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { expect, test } from "vitest";
 
 const queryClient = new QueryClient({
@@ -24,4 +24,33 @@ test("gives an empty list when no animal is provided", async () => {
 
   expect(breedList).toHaveLength(0);
   expect(status).toBe("loading");
+});
+
+test("test gives out breed when given an animal", async () => {
+  const breeds = [
+    "Havanese",
+    "Bichon Frise",
+    "Poodle",
+    "Maltese",
+    "Golden Retriever",
+    "Labrador",
+    "Husky",
+  ];
+
+  fetch.mockResponseOnce(
+    JSON.stringify({
+      animal: "dog",
+      breeds,
+    })
+  );
+
+  const { result } = renderHook(() => useBreedList("dog"), {
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  });
+
+  await waitFor(() => expect(result.current[1]).toBe("success"));
+  const [breedList] = result.current;
+  expect(breedList).toEqual(breeds);
 });
